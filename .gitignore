@@ -1,1 +1,16 @@
+# data + local db
+data/
+outputs/
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# notebooks 
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
 
