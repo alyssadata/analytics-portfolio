@@ -1,14 +1,49 @@
 # Project 01 | E-commerce KPIs, funnel, and retention
 
-## Pipeline status
-- Synthetic dataset generated successfully
-- DuckDB database created: `/home/runner/work/analytics-portfolio/analytics-portfolio/data/analytics.duckdb`
+## Executive summary
+This report is generated automatically from SQL outputs in `outputs/`.
 
-## Table row counts
-- customers: 500
-- orders: 2500
-- sessions: 4000
-- events: 6060
+### Headline metrics
+- Latest date: 2024-12-31
+- Revenue (latest day): 260.70
+- Orders (latest day): 4
+- AOV (latest day): 65.17
+
+### Channel performance
+- Highest converting channel: paid_social (conversion 0.131)
+
+### Repeat purchasing
+- Repeat purchase rate: 0.966
+- Repeat customers: 477 out of 494
+
+## Funnel snapshot (sessions)
+- view: 4000
+- add_to_cart: 1011
+- checkout: 609
+- purchase: 440
+
+## Cohort retention
+Cohorts are grouped by signup month and tracked by months since signup.
+Sample rows:
+- Cohort 2024-01-01, month 0: retention 0.314
+- Cohort 2024-01-01, month 1: retention 0.257
+- Cohort 2024-01-01, month 2: retention 0.229
+- Cohort 2024-01-01, month 3: retention 0.371
+- Cohort 2024-01-01, month 4: retention 0.343
+- Cohort 2024-01-01, month 5: retention 0.371
+
+## Delivery speed impact
+- Highest refund-rate bucket: 0-3 days (refund_rate 0.000)
+
+## Recommendations
+1. Invest in the highest converting channel with better landing pages and lifecycle follow-ups.
+2. Improve checkout completion by segmenting funnel drop-off by channel (and device once added).
+3. Reduce delivery delays in the slowest bucket and monitor refund and cancel rate movement.
+
+## Reproducibility
+- Database: `/home/runner/work/analytics-portfolio/analytics-portfolio/data/analytics.duckdb`
+- SQL sources: `queries/`
+- Output tables: `outputs/`
 
 ## Queries executed
 - 01_daily_kpis.sql
@@ -17,8 +52,3 @@
 - 04_cohort_retention.sql
 - 05_shipping_speed_impact.sql
 - 06_repeat_purchase_rate.sql
-
-Outputs saved in `outputs/` as CSV.
-
-## Next action
-Add the first SQL query: `queries/01_daily_kpis.sql` and re-run `python src/run_pipeline.py`.
