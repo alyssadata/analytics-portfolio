@@ -1,0 +1,5 @@
+delivery_bucket,orders,refund_rate,cancel_rate
+0-3 days,538,0.0,0.0
+4-6 days,1260,0.0,0.0
+7-10 days,563,0.0,0.0
+11+ days,4,0.0,0.0

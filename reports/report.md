@@ -15,6 +15,7 @@
 - 02_funnel_counts.sql
 - 03_conversion_by_channel.sql
 - 04_cohort_retention.sql
+- 05_shipping_speed_impact.sql
 
 Outputs saved in `outputs/` as CSV.
 
