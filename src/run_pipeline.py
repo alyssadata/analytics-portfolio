@@ -71,9 +71,15 @@ def generate_public_safe_tables() -> dict[str, pd.DataFrame]:
 
     # Status and delivery
     status_roll = rng.random(size=n_orders)
-    status = np.where(status_roll < 0.03, "canceled", np.where(status_roll < 0.06, "refunded", "delivered"))
+    status = np.where(
+        status_roll < 0.03,
+        "canceled",
+        np.where(status_roll < 0.06, "refunded", "delivered"),
+    )
 
-    delivery_days = rng.normal(loc=5, scale=2, size=n_orders).clip(1, 20).round().astype(int)
+    delivery_days = (
+        rng.normal(loc=5, scale=2, size=n_orders).clip(1, 20).round().astype(int)
+    )
     delivered_date = [
         (d + timedelta(days=int(dd))) if s == "delivered" else None
         for d, dd, s in zip(order_dates, delivery_days, status)
@@ -144,7 +150,7 @@ def build_duckdb(tables: dict[str, pd.DataFrame]) -> duckdb.DuckDBPyConnection:
 
 
 def run_queries(con: duckdb.DuckDBPyConnection) -> list[str]:
-    ran = []
+    ran: list[str] = []
     sql_files = sorted(QUERIES_DIR.glob("*.sql"))
     for sql_path in sql_files:
         sql = sql_path.read_text(encoding="utf-8").strip()
@@ -162,26 +168,116 @@ def run_queries(con: duckdb.DuckDBPyConnection) -> list[str]:
 def write_report(tables: dict[str, pd.DataFrame], ran_queries: list[str]) -> None:
     report_path = REPORTS_DIR / "report.md"
 
+    def load_output_csv(stem: str) -> pd.DataFrame | None:
+        p = OUTPUTS_DIR / f"{stem}.csv"
+        if not p.exists():
+            return None
+        return pd.read_csv(p)
+
+    # Load outputs if they exist
+    daily = load_output_csv("01_daily_kpis")
+    funnel = load_output_csv("02_funnel_counts")
+    by_channel = load_output_csv("03_conversion_by_channel")
+    cohort = load_output_csv("04_cohort_retention")
+    ship = load_output_csv("05_shipping_speed_impact")
+    repeat = load_output_csv("06_repeat_purchase_rate")
+
     lines: list[str] = []
     lines.append("# Project 01 | E-commerce KPIs, funnel, and retention\n\n")
-    lines.append("## Pipeline status\n")
-    lines.append("- Synthetic dataset generated successfully\n")
-    lines.append(f"- DuckDB database created: `{DB_PATH.as_posix()}`\n\n")
+    lines.append("## Executive summary\n")
+    lines.append("This report is generated automatically from SQL outputs in `outputs/`.\n\n")
 
-    lines.append("## Table row counts\n")
-    for name, df in tables.items():
-        lines.append(f"- {name}: {len(df)}\n")
+    # Headline metrics from daily KPIs
+    if daily is not None and not daily.empty:
+        daily_sorted = daily.sort_values("order_date")
+        latest = daily_sorted.iloc[-1]
 
-    lines.append("\n## Queries executed\n")
+        lines.append("### Headline metrics\n")
+        lines.append(f"- Latest date: {latest['order_date']}\n")
+        lines.append(f"- Revenue (latest day): {float(latest['revenue']):0.2f}\n")
+        lines.append(f"- Orders (latest day): {int(latest['orders'])}\n")
+        lines.append(f"- AOV (latest day): {float(latest['aov']):0.2f}\n\n")
+    else:
+        lines.append("### Headline metrics\n")
+        lines.append("- Daily KPI output not found yet. Add `queries/01_daily_kpis.sql`.\n\n")
+
+    # Best channel by conversion
+    if by_channel is not None and not by_channel.empty:
+        top = by_channel.sort_values("conversion_rate", ascending=False).iloc[0]
+        lines.append("### Channel performance\n")
+        lines.append(
+            f"- Highest converting channel: {top['channel']} (conversion {float(top['conversion_rate']):0.3f})\n\n"
+        )
+    else:
+        lines.append("### Channel performance\n")
+        lines.append("- Channel conversion output not found yet. Add `queries/03_conversion_by_channel.sql`.\n\n")
+
+    # Repeat purchase rate
+    if repeat is not None and not repeat.empty:
+        r = repeat.iloc[0]
+        lines.append("### Repeat purchasing\n")
+        lines.append(f"- Repeat purchase rate: {float(r['repeat_purchase_rate']):0.3f}\n")
+        lines.append(
+            f"- Repeat customers: {int(r['repeat_customers'])} out of {int(r['customers_with_delivered_orders'])}\n\n"
+        )
+    else:
+        lines.append("### Repeat purchasing\n")
+        lines.append("- Repeat purchase output not found yet. Add `queries/06_repeat_purchase_rate.sql`.\n\n")
+
+    # Funnel snapshot
+    if funnel is not None and not funnel.empty and "step" in funnel.columns:
+        lines.append("## Funnel snapshot (sessions)\n")
+        for _, row in funnel.iterrows():
+            lines.append(f"- {row['step']}: {int(row['sessions'])}\n")
+        lines.append("\n")
+    else:
+        lines.append("## Funnel snapshot (sessions)\n")
+        lines.append("- Funnel output not found yet. Add `queries/02_funnel_counts.sql`.\n\n")
+
+    # Cohort retention sample
+    if cohort is not None and not cohort.empty:
+        lines.append("## Cohort retention\n")
+        lines.append("Cohorts are grouped by signup month and tracked by months since signup.\n")
+        sample = cohort.sort_values(["cohort_month", "months_since"]).head(6)
+        lines.append("Sample rows:\n")
+        for _, row in sample.iterrows():
+            lines.append(
+                f"- Cohort {row['cohort_month']}, month {int(row['months_since'])}: retention {float(row['retention_rate']):0.3f}\n"
+            )
+        lines.append("\n")
+    else:
+        lines.append("## Cohort retention\n")
+        lines.append("- Cohort output not found yet. Add `queries/04_cohort_retention.sql`.\n\n")
+
+    # Shipping impact
+    if ship is not None and not ship.empty:
+        lines.append("## Delivery speed impact\n")
+        worst = ship.sort_values("refund_rate", ascending=False).iloc[0]
+        lines.append(
+            f"- Highest refund-rate bucket: {worst['delivery_bucket']} (refund_rate {float(worst['refund_rate']):0.3f})\n\n"
+        )
+    else:
+        lines.append("## Delivery speed impact\n")
+        lines.append("- Shipping impact output not found yet. Add `queries/05_shipping_speed_impact.sql`.\n\n")
+
+    # Recommendations
+    lines.append("## Recommendations\n")
+    lines.append("1. Invest in the highest converting channel with better landing pages and lifecycle follow-ups.\n")
+    lines.append("2. Improve checkout completion by segmenting funnel drop-off by channel (and device once added).\n")
+    lines.append("3. Reduce delivery delays in the slowest bucket and monitor refund and cancel rate movement.\n\n")
+
+    # Reproducibility + provenance
+    lines.append("## Reproducibility\n")
+    lines.append(f"- Database: `{DB_PATH.as_posix()}`\n")
+    lines.append("- SQL sources: `queries/`\n")
+    lines.append("- Output tables: `outputs/`\n\n")
+
+    lines.append("## Queries executed\n")
     if ran_queries:
         for q in ran_queries:
             lines.append(f"- {q}\n")
-        lines.append("\nOutputs saved in `outputs/` as CSV.\n")
     else:
-        lines.append("- None yet. Add `.sql` files to `queries/` and re-run the pipeline.\n")
-
-    lines.append("\n## Next action\n")
-    lines.append("Add the first SQL query: `queries/01_daily_kpis.sql` and re-run `python src/run_pipeline.py`.\n")
+        lines.append("- None\n")
 
     report_path.write_text("".join(lines), encoding="utf-8")
 
@@ -193,6 +289,10 @@ def main() -> None:
     ran = run_queries(con)
     write_report(tables, ran)
     print("Done. Open reports/report.md")
+
+
+if __name__ == "__main__":
+    main()
 
 
 if __name__ == "__main__":
