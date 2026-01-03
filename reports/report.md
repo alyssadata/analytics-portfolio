@@ -5,32 +5,35 @@ This report is generated automatically from SQL outputs in `outputs/`.
 
 ### Headline metrics
 - Latest date: 2024-12-31
-- Revenue (latest day): 260.70
+- Revenue (latest day): 237.98
 - Orders (latest day): 4
-- AOV (latest day): 65.17
+- AOV (latest day): 59.50
 
-### Channel performance
-- Highest converting channel: paid_social (conversion 0.131)
+### Channel conversion
+- Highest converting channel: paid_social (conversion 0.112)
+
+### Channel AOV
+- Highest AOV channel: organic (AOV 68.00)
 
 ### Repeat purchasing
-- Repeat purchase rate: 0.966
-- Repeat customers: 477 out of 494
+- Repeat purchase rate: 0.751
+- Repeat customers: 344 out of 458
 
 ## Funnel snapshot (sessions)
-- view: 4000
-- add_to_cart: 1011
-- checkout: 609
-- purchase: 440
+- view: 12000
+- add_to_cart: 2977
+- checkout: 1753
+- purchase: 1290
 
 ## Cohort retention
 Cohorts are grouped by signup month and tracked by months since signup.
 Sample rows:
-- Cohort 2024-01-01, month 0: retention 0.314
-- Cohort 2024-01-01, month 1: retention 0.257
-- Cohort 2024-01-01, month 2: retention 0.229
-- Cohort 2024-01-01, month 3: retention 0.371
-- Cohort 2024-01-01, month 4: retention 0.343
-- Cohort 2024-01-01, month 5: retention 0.371
+- Cohort 2024-01-01, month 0: retention 0.143
+- Cohort 2024-01-01, month 1: retention 0.143
+- Cohort 2024-01-01, month 2: retention 0.200
+- Cohort 2024-01-01, month 3: retention 0.171
+- Cohort 2024-01-01, month 4: retention 0.143
+- Cohort 2024-01-01, month 5: retention 0.229
 
 ## Delivery speed impact
 - Highest refund-rate bucket: 0-3 days (refund_rate 0.000)
