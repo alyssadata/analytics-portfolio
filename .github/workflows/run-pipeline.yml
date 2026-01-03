@@ -8,9 +8,6 @@ on:
       - "queries/**"
       - "requirements.txt"
       - ".github/workflows/run-pipeline.yml"
-    paths-ignore:
-      - "outputs/**"
-      - "reports/**"
 
 permissions:
   contents: write
@@ -43,9 +40,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Stage only what we want to store in the repo
+          # Stage outputs we want in the repo
           git add -f reports/report.md || true
-          git add -f outputs/*.csv outputs/*.png 2>/dev/null || true
+          git add -f outputs/ || true
 
           # If nothing changed, stop cleanly
           if [ -z "$(git status --porcelain)" ]; then
@@ -53,5 +50,5 @@ jobs:
             exit 0
           fi
 
-          git commit -m "chore: update generated report and outputs [skip ci]"
+          git commit -m "chore: update generated report and outputs"
           git push origin main
