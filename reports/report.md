@@ -1,10 +1,1 @@
-
-### `requirements.txt`
-```txt
-duckdb==1.1.3
-pandas==2.2.3
-numpy==2.1.3
-matplotlib==3.9.2
-pyarrow==18.1.0
-pytest==8.3.4
-
+keep
