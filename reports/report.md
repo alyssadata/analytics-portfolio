@@ -57,3 +57,4 @@ Sample rows:
 - 06_repeat_purchase_rate.sql
 - 07_aov_by_channel.sql
 - 08_integrity_orders_session_match.sql
+- 09_weekly_revenue_by_channel.sql
