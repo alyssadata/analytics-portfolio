@@ -1,0 +1,5 @@
+step,events,sessions
+view,4000,4000
+add_to_cart,1011,1011
+checkout,609,609
+purchase,440,440

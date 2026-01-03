@@ -12,6 +12,7 @@
 
 ## Queries executed
 - 01_daily_kpis.sql
+- 02_funnel_counts.sql
 
 Outputs saved in `outputs/` as CSV.
 
