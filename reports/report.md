@@ -14,6 +14,7 @@
 - 01_daily_kpis.sql
 - 02_funnel_counts.sql
 - 03_conversion_by_channel.sql
+- 04_cohort_retention.sql
 
 Outputs saved in `outputs/` as CSV.
 
