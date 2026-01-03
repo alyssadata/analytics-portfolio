@@ -13,7 +13,7 @@ This report is generated automatically from SQL outputs in `outputs/`.
 - Highest converting channel: paid_social (conversion 0.112)
 
 ### Channel AOV
-- Highest AOV channel: organic (AOV 68.00)
+- Highest AOV channel: paid_social (AOV 70.43)
 
 ### Repeat purchasing
 - Repeat purchase rate: 0.751
