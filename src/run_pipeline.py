@@ -199,6 +199,8 @@ def write_report(tables: dict[str, pd.DataFrame], ran_queries: list[str]) -> Non
     ship = load_output_csv("05_shipping_speed_impact")
     repeat = load_output_csv("06_repeat_purchase_rate")
     aov_by_channel = load_output_csv("07_aov_by_channel")
+    integrity = load_output_csv("08_integrity_orders_session_match")
+    weekly = load_output_csv("09_weekly_revenue_by_channel")
 
     lines: list[str] = []
     lines.append("# Project 01 | E-commerce KPIs, funnel, and retention\n\n")
@@ -251,43 +253,4 @@ def write_report(tables: dict[str, pd.DataFrame], ran_queries: list[str]) -> Non
             lines.append(
                 f"- Cohort {row['cohort_month']}, month {int(row['months_since'])}: retention {float(row['retention_rate']):0.3f}\n"
             )
-        lines.append("\n")
-
-    if ship is not None and not ship.empty:
-        lines.append("## Delivery speed impact\n")
-        worst = ship.sort_values("refund_rate", ascending=False).iloc[0]
-        lines.append(
-            f"- Highest refund-rate bucket: {worst['delivery_bucket']} (refund_rate {float(worst['refund_rate']):0.3f})\n\n"
-        )
-
-    lines.append("## Recommendations\n")
-    lines.append("1. Invest in the highest converting channel with better landing pages and lifecycle follow-ups.\n")
-    lines.append("2. Improve checkout completion by segmenting funnel drop-off by channel (and device once added).\n")
-    lines.append("3. Reduce delivery delays in the slowest bucket and monitor refund and cancel rate movement.\n\n")
-
-    lines.append("## Reproducibility\n")
-    lines.append(f"- Database: `{DB_PATH.as_posix()}`\n")
-    lines.append("- SQL sources: `queries/`\n")
-    lines.append("- Output tables: `outputs/`\n\n")
-
-    lines.append("## Queries executed\n")
-    if ran_queries:
-        for q in ran_queries:
-            lines.append(f"- {q}\n")
-    else:
-        lines.append("- None\n")
-
-    report_path.write_text("".join(lines), encoding="utf-8")
-
-
-def main() -> None:
-    ensure_dirs()
-    tables = generate_public_safe_tables()
-    con = build_duckdb(tables)
-    ran = run_queries(con)
-    write_report(tables, ran)
-    print("Done. Open reports/report.md")
-
-
-if __name__ == "__main__":
-    main()
+        lines.a
