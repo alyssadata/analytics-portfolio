@@ -16,6 +16,7 @@
 - 03_conversion_by_channel.sql
 - 04_cohort_retention.sql
 - 05_shipping_speed_impact.sql
+- 06_repeat_purchase_rate.sql
 
 Outputs saved in `outputs/` as CSV.
 
