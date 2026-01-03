@@ -52,3 +52,4 @@ Sample rows:
 - 04_cohort_retention.sql
 - 05_shipping_speed_impact.sql
 - 06_repeat_purchase_rate.sql
+- 07_aov_by_channel.sql
